@@ -27,29 +27,6 @@
       </div>
       <button @click.prevent="renderList()">Search</button>
     </form>
-    <div class="results" v-if="result">
-      <table v-if="result.length">
-        <thead>
-          <tr>
-            <th>Departure</th>
-            <th>Arrival</th>
-            <th>Transport</th>
-            <th>Duration</th>
-            <th>Cost, {{currency}}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in result" :key="index" >
-            <td>{{item.departure}}</td>
-            <td>{{item.arrival}}</td>
-            <td>{{item.transport}}</td>
-            <td>{{item.duration.h}} : {{item.duration.m}}</td>
-            <td>{{item.cost}}</td>
-          </tr>
-        </tbody>
-      </table>
-      <h2 v-else>Oops! No results for this direction</h2>
-    </div>
   </main>
 </template>
 
@@ -57,12 +34,8 @@
 export default {
   data () {
     return {
-      result:false,
-      Data:false,
-      currencyValue:false,
       out:[],
       to:[],
-      title: 'TripSorter',
       form:{
         out:false,
         to:false,
@@ -72,42 +45,44 @@ export default {
   },
   computed: {
     loadedData(){
-        return this.Data;
+      return this.$store.getters.getDealsData();
     },
     currency(){
-        return this.currencyValue;
+        return this.$store.getters.getCurrency();
+    },
+    title(){
+        return this.$store.getters.getTitle();
     }
   },
   created(){
-    this.$http.get('./static/response.json').then(res => {
-        this.Data = res.body['deals'];
-        this.currencyValue= res.body['currency'];
-        console.log(res.body)
-        this.loadedData.map(elem => {
+    if(!this.loadedData) {
+        this.$store.dispatch('fetchDeals', './static/response.json').then(e=>{
+          console.log(e)
+          this.loadedData.map(elem => {
             if(this.out.indexOf(elem['departure']) === -1) {
-                this.out.push(elem['departure'])
+              this.out.push(elem['departure'])
             }
             if(this.to.indexOf(elem['arrival']) === -1) {
-                this.to.push(elem['arrival'])
+              this.to.push(elem['arrival'])
             }
-        })
-    })
+          })
+        });
+    }
+
   },
   methods:{
       renderList(){
           const sortedArray = this.loadedData
-              .filter(elem => {
-//                 if(elem['departure'] === this.form.out && elem['arrival'] === this.form.to) console.log('hey!');
-//                 if(elem['arrival'] === this.form.to) console.log('WOW!');
-                 return (elem['departure'] === this.form.out && elem['arrival'] === this.form.to)
-              });
+              .filter(elem => (elem['departure'] === this.form.out && elem['arrival'] === this.form.to));
+
           if(this.form.sort === '1'){
               sortedArray.sort(this.costSort('cost'))
           }else{
               sortedArray.sort(this.timeSort('duration'))
           }
-          console.log(sortedArray);
-          this.result = sortedArray;
+
+          this.$store.commit('SET_RESULT', sortedArray);
+          this.$router.push('results')
       },
       costSort(property) {
           return  (a,b) => (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
@@ -122,9 +97,10 @@ export default {
   }
 }
 </script>
-
-<style scoped>
+<style>
   main{display: flex;justify-content: center;align-items: center;flex-direction: column;height: 100%;}
+</style>
+<style scoped>
   form{padding: 40px; border-radius: 10px; background: white; font-size: 1.2em;}
   input[type=radio]{
     display: none;
@@ -174,21 +150,4 @@ export default {
     cursor: pointer;
   }
 
-
-
-  .results{
-    padding: 20px;
-    background: white;
-    margin-top:20px;
-    border-radius: 10px;
-    width:50%;
-  }
-  table{
-    width: 100%;
-    text-align: center;
-    border-collapse:collapse;
-  }
-  table thead tr th{border-bottom: 1px solid #999}
-  table tr{height: 40px}
-  table th{width: 20%}
 </style>

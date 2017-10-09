@@ -2,13 +2,24 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App.vue'
-import resource from 'vue-resource'
+import VueResource from 'vue-resource'
+import VueRouter from 'vue-router'
+import routes from './Routes';
+import Vuex from 'vuex';
+import store from './store';
 
-Vue.use(resource);
+Vue.use(VueResource);
+Vue.use(VueRouter);
 Vue.config.productionTip = false;
+
+const router = new VueRouter({
+  routes // сокращение от `routes: routes`
+});
 
 new Vue({
   el: '#app',
+  router,
+  store,
   template: '<App/>',
   components: { App }
 })
