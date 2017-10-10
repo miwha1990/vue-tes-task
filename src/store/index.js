@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
+
 const store = new Vuex.Store({
     state: {
       deals: false,
@@ -35,7 +36,7 @@ const store = new Vuex.Store({
     },
     actions: {
       fetchDeals(context, url) {
-        this.$http.get(url).then(res => {
+       return Vue.http.get(url).then(res => {
           context.commit('SET_DEALS', res.body['deals']);
           context.commit('SET_CURRENCY', res.body['currency'])
         })

@@ -13,7 +13,8 @@ Vue.use(VueRouter);
 Vue.config.productionTip = false;
 
 const router = new VueRouter({
-  routes // сокращение от `routes: routes`
+  mode: 'history',
+  routes
 });
 
 new Vue({

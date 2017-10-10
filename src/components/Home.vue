@@ -5,14 +5,14 @@
       <div class="formGroup">
         <label class="forSelect" for="out">From:</label>
         <select name="out" id="out" v-model="form.out">
-          <option disabled selected value="">Choose departure city...</option>
+          <option disabled selected :value="true">Choose departure city...</option>
           <option v-for="(option, index) in out" :value="option" :key="index">{{option}}</option>
         </select>
       </div>
       <div class="formGroup">
         <label class="forSelect" for="to">To:</label>
         <select name="to" id="to" v-model="form.to">
-          <option disabled selected value="">Choose arrival city...</option>
+          <option disabled selected :value="true">Choose arrival city...</option>
           <option v-for="(option, index) in to" :value="option" :key="index">{{option}}</option>
         </select>
       </div>
@@ -37,27 +37,26 @@ export default {
       out:[],
       to:[],
       form:{
-        out:false,
-        to:false,
-        sort:1
+        out:true,
+        to:true,
+        sort:'1'
       }
     }
   },
   computed: {
     loadedData(){
-      return this.$store.getters.getDealsData();
+      return this.$store.getters.getDealsData;
     },
     currency(){
-        return this.$store.getters.getCurrency();
+        return this.$store.getters.getCurrency;
     },
     title(){
-        return this.$store.getters.getTitle();
+        return this.$store.getters.getTitle;
     }
   },
   created(){
     if(!this.loadedData) {
         this.$store.dispatch('fetchDeals', './static/response.json').then(e=>{
-          console.log(e)
           this.loadedData.map(elem => {
             if(this.out.indexOf(elem['departure']) === -1) {
               this.out.push(elem['departure'])
@@ -66,7 +65,16 @@ export default {
               this.to.push(elem['arrival'])
             }
           })
-        });
+        }).then();
+    } else {
+        this.loadedData.map(elem => {
+            if(this.out.indexOf(elem['departure']) === -1) {
+                this.out.push(elem['departure'])
+            }
+            if(this.to.indexOf(elem['arrival']) === -1) {
+                this.to.push(elem['arrival'])
+            }
+        })
     }
 
   },

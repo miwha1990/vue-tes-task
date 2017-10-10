@@ -31,10 +31,13 @@
   export default {
     computed: {
       result() {
-        return this.$store.getters.getResultData();
+        return this.$store.getters.getResultData;
       },
       title() {
-        return this.$store.getters.getTitle();
+        return this.$store.getters.getTitle;
+      },
+      currency() {
+          return this.$store.getters.getCurrency;
       }
     }
   }
@@ -44,13 +47,16 @@
     font-size: 1.3em;
     width: 50%;
     padding: 10px 20px;
-    border: 2px solid #ffad40;
     color:#fff;
-    background: #00b91e;
+    background: #7e15ff;
     border-radius: 10px;
     cursor: pointer;
+    display: block;
+    text-decoration: none;
+    margin:0 auto;
+    text-align: center;
   }
-
+  h2{text-align: center}
   .results{
     padding: 20px;
     background: white;
